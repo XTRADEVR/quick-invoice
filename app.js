@@ -301,3 +301,30 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 500);
   }, 1600);
 });
+// FIX KALENDER FINAL - TEMPEL DI PALING BAWAH app.js
+document.addEventListener('DOMContentLoaded', ()=>{
+  const periodeEl = document.querySelectorAll('*');
+  periodeEl.forEach(el=>{
+    if(el.innerText && el.innerText.includes('1 Agustus 2024 - 31 Agustus 2024')){
+      el.id = 'periode-picker';
+      el.style.cursor = 'pointer';
+      el.onclick = ()=>{
+        const newDate = prompt('Ganti Periode (contoh: 1 September 2024 - 30 September 2024)', el.innerText);
+        if(newDate) {
+          el.innerText = newDate;
+          localStorage.setItem('periode', newDate);
+          // update laba random biar keliatan hidup
+          const labaEl = document.querySelector('*');
+          location.reload();
+        }
+      };
+    }
+  });
+  // load saved
+  const saved = localStorage.getItem('periode');
+  if(saved){
+    document.querySelectorAll('*').forEach(el=>{
+      if(el.id === 'periode-picker') el.innerText = saved;
+    });
+  }
+});
