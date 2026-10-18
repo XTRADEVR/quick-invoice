@@ -9,7 +9,7 @@
   --accent-green: #22C55E;
   --accent-red: #EF4444;
   --card-bg: linear-gradient(145deg, #1A1A1A, #121212);
-  --header-bg: rgba(13, 13, 13, 0.85);
+  --header-bg: rgba(13, 13, 13, 0.88);
 }
 
 [data-theme="light"] {
@@ -20,8 +20,8 @@
   --gold-glow: rgba(184, 134, 11, 0.18);
   --text-main: #1A1A1A;
   --text-muted: #6B7280;
-  --card-bg: linear-gradient(145deg, #FFFFFF, #F3F0E6);
-  --header-bg: rgba(248, 249, 250, 0.9);
+  --card-bg: linear-gradient(145deg, #FFFFFF, #F5F1E4);
+  --header-bg: rgba(248, 249, 250, 0.92);
 }
 
 * {
@@ -43,11 +43,9 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Smartphone Container Frame */
 .app-container {
   width: 100%;
   max-width: 430px;
-  min-height: 100vh;
   height: 100vh;
   position: relative;
   background-color: var(--bg-color);
@@ -57,7 +55,7 @@ body {
   overflow: hidden;
 }
 
-/* Screen Switcher System */
+/* Screen Transitions */
 .screen {
   display: none;
   flex-direction: column;
@@ -77,14 +75,11 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 1. Flash / Splash Screen */
+/* 1. Flash Splash Screen */
 #splash_screen {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, #1F1908 0%, #0D0D0D 80%);
+  inset: 0;
+  background: radial-gradient(circle at center, #1F1908 0%, #0D0D0D 85%);
   z-index: 9999;
   display: flex;
   flex-direction: column;
@@ -97,7 +92,7 @@ body {
 #splash_screen.fade-out {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.5s ease;
 }
 
 .splash-icon {
@@ -110,7 +105,7 @@ body {
 
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+  50% { transform: scale(1.06); }
 }
 
 .splash-title {
@@ -124,7 +119,7 @@ body {
 .splash-subtitle {
   color: var(--text-main);
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 6px;
 }
 
@@ -139,7 +134,6 @@ body {
 .pagination {
   display: flex;
   gap: 8px;
-  margin-top: 15px;
 }
 
 .dot {
@@ -160,7 +154,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 20px;
+  padding: 16px 20px;
   position: sticky;
   top: 0;
   background-color: var(--header-bg);
@@ -170,16 +164,10 @@ body {
 }
 
 .app-brand {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--primary-gold);
   letter-spacing: 1px;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }
 
 .btn-icon {
@@ -193,7 +181,8 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: bold;
 }
 
 /* Profit Card */
@@ -217,7 +206,7 @@ body {
   height: 120px;
   background: var(--primary-gold);
   filter: blur(55px);
-  opacity: 0.18;
+  opacity: 0.16;
 }
 
 .profit-label {
@@ -250,7 +239,7 @@ body {
   border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
-/* Action Buttons */
+/* Action Buttons (Gold Style) */
 .action-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -278,6 +267,11 @@ body {
 
 .btn-gold-action:active {
   transform: scale(0.97);
+}
+
+.gold-icon {
+  font-size: 16px;
+  font-weight: bold;
 }
 
 /* Transaction List */
@@ -333,11 +327,11 @@ body {
   color: var(--primary-gold);
 }
 
-/* Camera Scan Viewfinder Screen */
+/* Camera Scanner Container */
 .camera-container {
   margin: 16px 20px;
   background: #000;
-  height: 330px;
+  height: 310px;
   border-radius: 20px;
   position: relative;
   border: 2px dashed var(--primary-gold);
@@ -346,8 +340,18 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 24px;
+  padding: 20px;
   overflow: hidden;
+}
+
+#camera-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
 }
 
 .scanner-line {
@@ -357,8 +361,9 @@ body {
   right: 0;
   height: 3px;
   background: var(--primary-gold);
-  box-shadow: 0 0 10px var(--primary-gold);
+  box-shadow: 0 0 12px var(--primary-gold);
   animation: scanMove 2.2s infinite ease-in-out;
+  z-index: 5;
 }
 
 @keyframes scanMove {
@@ -367,22 +372,9 @@ body {
   100% { top: 5%; }
 }
 
-.cam-inst {
-  font-size: 16px;
-  font-weight: 700;
-  margin-top: 12px;
-}
-
-.cam-sub {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 6px;
-  max-width: 250px;
-}
-
 .branding-banner {
   margin: 10px 20px 6px;
-  padding: 10px 14px;
+  padding: 12px 16px;
   background: var(--surface-color);
   border: 1px solid var(--surface-border);
   border-radius: 12px;
@@ -391,7 +383,7 @@ body {
   align-items: center;
 }
 
-/* Financial Summary & Charts */
+/* Summary Grid & Bars */
 .summary-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -451,7 +443,7 @@ body {
 
 .bar {
   width: 22px;
-  background: linear-gradient(to top, #6e5512, var(--primary-gold));
+  background: linear-gradient(to top, #735914, var(--primary-gold));
   border-radius: 6px 6px 0 0;
   transition: height 0.4s ease;
 }
@@ -461,7 +453,56 @@ body {
   color: var(--text-muted);
 }
 
-/* Form & QR Screen */
+/* Kalender Picker Gold Black */
+.card-periode {
+  margin: 12px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface-color);
+  border: 1px solid var(--surface-border);
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.card-periode:hover {
+  border-color: var(--primary-gold);
+}
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(0.7) sepia(1) saturate(5) hue-rotate(10deg);
+}
+
+input[type="date"] {
+  background: #000 !important;
+  color: var(--primary-gold) !important;
+  border: 1px solid var(--primary-gold) !important;
+}
+
+/* QR Code Screen Box */
+.qr-box {
+  margin: 16px auto;
+  width: 216px;
+  height: 216px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 20px var(--gold-glow);
+  overflow: hidden;
+}
+
+.qr-box canvas, .qr-box img {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Forms & Inputs */
 .form-group {
   margin: 0 20px 14px;
 }
@@ -489,25 +530,21 @@ body {
   border-color: var(--primary-gold);
 }
 
-.qr-box {
-  margin: 20px auto;
-  width: 210px;
-  height: 210px;
-  background: #FFFFFF;
-  border-radius: 16px;
-  padding: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 0 24px var(--gold-glow);
+.primary-btn {
+  width: calc(100% - 40px);
+  margin: 14px 20px 6px;
+  background: linear-gradient(135deg, var(--primary-gold), #967417);
+  border: none;
+  color: #000;
+  font-weight: 700;
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
 }
 
-.qr-box svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Bottom Navigation Bar */
+/* Bottom Navigation */
 .bottom-nav {
   position: absolute;
   bottom: 0;
@@ -534,7 +571,7 @@ body {
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
-  width: 25%;
+  width: 20%;
   transition: color 0.2s;
 }
 
@@ -548,18 +585,4 @@ body {
   stroke: currentColor;
   fill: none;
   stroke-width: 2;
-}
-
-.primary-btn {
-  width: calc(100% - 40px);
-  margin: 14px 20px 6px;
-  background: linear-gradient(135deg, var(--primary-gold), #967417);
-  border: none;
-  color: #000;
-  font-weight: 700;
-  padding: 15px;
-  border-radius: 12px;
-  font-size: 14px;
-  cursor: pointer;
-  letter-spacing: 0.5px;
-}
+  }
