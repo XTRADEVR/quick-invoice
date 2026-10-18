@@ -16,12 +16,31 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
   <link rel="stylesheet" href="./style.css">
+
+  <style>
+    /* 2. FIX FLASH CAHAYA SCAN GLOWING GOLD */
+    @keyframes scanMove {
+      0% { top: 0%; }
+      50% { top: 100%; }
+      100% { top: 0%; }
+    }
+    .scan-line, .scanner-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #D4AF37 !important;
+      box-shadow: 0 0 15px #D4AF37, 0 0 30px #D4AF37 !important;
+      animation: scanMove 2s infinite ease-in-out !important;
+      z-index: 10;
+    }
+  </style>
 </head>
 <body>
 
   <div class="app-container">
     
-    <!-- 1. SPLASH SCREEN (Screen Flash) -->
+    <!-- 1. SPLASH SCREEN (Screen Flash di awal aplikasi) -->
     <div id="splash_screen">
       <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" alt="Gold Ornamental Receipt Icon" class="splash-icon">
       <h1 class="splash-title">QUICK INVOICE</h1>
@@ -68,7 +87,7 @@
         </div>
 
         <div id="transaction-list-container">
-          <!-- Transaksi dimuat otomatis dari localStorage / default -->
+          <!-- Transaksi dimuat otomatis -->
         </div>
       </div>
     </section>
@@ -89,9 +108,11 @@
         <span style="color: var(--primary-gold); font-size: 18px;">⚡</span>
       </div>
 
-      <div class="camera-container">
-        <video id="camera-feed" autoplay playsinline muted></video>
-        <div class="scanner-line"></div>
+      <!-- Kamera Viewfinder dengan Flash Cahaya & Canvas -->
+      <div class="camera-container" style="position:relative; overflow:hidden;">
+        <video id="camera-feed" autoplay playsinline style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; display:none;"></video>
+        <canvas id="canvas-capture" hidden></canvas>
+        <div class="scan-line scanner-line"></div>
         <div id="scan-placeholder" style="z-index: 2;">
           <div style="font-size: 44px; margin-bottom: 8px; color: var(--primary-gold);">⌗</div>
           <div style="font-size: 15px; font-weight: 700;">Arahkan Kamera ke Struk</div>
@@ -113,15 +134,21 @@
       <header class="top-header">
         <button class="btn-icon" onclick="showPage('home')">←</button>
         <div class="app-brand" style="font-size: 15px;">LAPORAN LABA RUGI</div>
-        <button class="btn-icon" onclick="alert('Laporan berhasil diunduh (PDF)')" title="Download">⬇</button>
+        <button class="btn-icon" onclick="triggerDownloadLaporan()" title="Download">⬇</button>
       </header>
 
-      <!-- Kalender Picker Interaktif -->
-      <div class="card-periode" id="card-periode-btn">
+      <!-- 1. FIX KALENDER DENGAN NATIVE DATE PICKER -->
+      <div class="card-periode" id="card-periode-btn" onclick="openNativeDatePicker()">
         <span style="font-size: 12px; color: var(--text-muted);">Periode Terpilih:</span>
         <div id="periode-text" style="font-size: 12px; font-weight: 700; color: var(--primary-gold);">
-          1 - 31 Agustus 2024
+          Memuat periode...
         </div>
+        <!-- 2 Input Date Hidden untuk Native Picker -->
+        <input type="date" id="startDate" style="position:absolute; opacity:0; pointer-events:none; width:0; height:0;">
+        <input type="date" id="endDate" style="position:absolute; opacity:0; pointer-events:none; width:0; height:0;">
+        <!-- Alias backward-compatibility -->
+        <input type="hidden" id="input-start">
+        <input type="hidden" id="input-end">
       </div>
 
       <div class="summary-grid">
@@ -159,7 +186,7 @@
       </div>
     </section>
 
-    <!-- 5. BUAT QR NOTA SCREEN -->
+    <!-- 5. BUAT QR NOTA SCREEN (HANYA TOTAL TAGIHAN) -->
     <section id="page-qr" class="screen">
       <header class="top-header">
         <button class="btn-icon" onclick="showPage('home')">←</button>
@@ -167,19 +194,19 @@
         <span style="font-size: 10px; font-weight: 800; background: var(--primary-gold); color: #000; padding: 4px 6px; border-radius: 4px;">GOLD</span>
       </header>
 
-      <div class="form-group" style="margin-top: 14px;">
-        <label class="form-label">Nama Toko</label>
-        <input type="text" id="qrStoreInput" class="form-input" placeholder="Masukkan nama toko" value="Warung xtrade">
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Total</label>
-        <input type="text" id="qrAmountInput" class="form-input" placeholder="Rp 98.000" value="Rp 98.000">
+      <!-- 4. FIX QR: Hapus Nama Toko, sisakan id="total-input" -->
+      <div class="form-group" style="margin-top: 18px;">
+        <label class="form-label" for="total-input">Total Tagihan</label>
+        <input type="text" id="total-input" class="form-input" placeholder="Rp 0" value="Rp 98.000">
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">QR ini hanya berisi total, tanpa nama barang</p>
+        <!-- Kompatibilitas elemen lama jika dibutuhkan script bawaan -->
+        <input type="hidden" id="qrStoreInput" value="Warung xtrade">
+        <input type="hidden" id="qrAmountInput" value="Rp 98.000">
       </div>
 
       <button class="primary-btn" onclick="createQR()">CREATE QR</button>
 
-      <!-- Real Dynamic QR Container -->
+      <!-- Container Real Dynamic QR Code -->
       <div id="qrcode" class="qr-box"></div>
 
       <p style="text-align: center; font-weight: 700; font-size: 13px;">Scan QR untuk Nota Digital</p>
@@ -188,7 +215,7 @@
       </p>
     </section>
 
-    <!-- 6. SETTING SCREEN (Fix Modal/Page Tanpa Alert) -->
+    <!-- 6. SETTING SCREEN -->
     <section id="page-setting" class="screen">
       <header class="top-header">
         <button class="btn-icon" onclick="showPage('home')">←</button>
@@ -224,7 +251,16 @@
       </div>
     </section>
 
-    <!-- GLOBAL BOTTOM NAVIGATION -->
+    <!-- 3. FIX SCAN MODAL POPUP (Gold Black - Menggantikan Alert Bawaan) -->
+    <div id="success-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); display:none; z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+      <div style="background:#111; border:2px solid #D4AF37; padding:22px; border-radius:16px; text-align:center; max-width:320px; width:85%; box-shadow:0 0 25px rgba(212,175,55,0.4);">
+        <h3 style="color:#D4AF37; font-size:18px; margin-bottom:8px;">Struk Berhasil!</h3>
+        <p id="modal-text" style="color:#FFF; font-size:14px; margin-bottom:18px; line-height:1.5;"></p>
+        <button onclick="document.getElementById('success-modal').style.display='none'" style="background:#D4AF37; color:#000; padding:10px 24px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; width:100%; font-size:14px;">Oke</button>
+      </div>
+    </div>
+
+    <!-- GLOBAL BOTTOM NAVIGATION (Tetap Home, Laporan, QR, Setting) -->
     <nav class="bottom-nav">
       <div class="nav-item active" onclick="showPage('home')">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
@@ -246,6 +282,175 @@
 
   </div>
 
+  <!-- SCRIPT UTAMA APP.JS -->
   <script src="./app.js"></script>
+
+  <!-- LOGIKA OVERRIDE 4 FIXES LANGSUNG DI INDEX.HTML -->
+  <script>
+    // --- OVERRIDE ALERT DENGAN MODAL DIV GOLD BLACK ---
+    function showGoldModal(title, text) {
+      const modal = document.getElementById('success-modal');
+      const modalTitle = modal.querySelector('h3');
+      const modalText = document.getElementById('modal-text');
+      if (modal && modalText) {
+        if (modalTitle) modalTitle.innerText = title;
+        modalText.innerHTML = text;
+        modal.style.display = 'flex';
+      }
+    }
+
+    window._nativeAlert = window.alert;
+    window.alert = function(msg) {
+      if (typeof msg === 'string' && msg.includes('Pengaturan')) {
+        if (typeof showPage === 'function') showPage('setting');
+        return;
+      }
+      showGoldModal('Pemberitahuan', msg);
+    };
+
+    function triggerDownloadLaporan() {
+      showGoldModal('Laporan Laba Rugi', 'File laporan periode ini siap diunduh dalam format PDF/Excel.');
+    }
+
+    // --- 1. LOGIKA FIX KALENDER NATIVE & PERIODE ---
+    function initNativeKalender() {
+      const startInput = document.getElementById('startDate');
+      const endInput = document.getElementById('endDate');
+      const aliasStart = document.getElementById('input-start');
+      const aliasEnd = document.getElementById('input-end');
+
+      const today = new Date();
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(today.getMonth() - 1);
+
+      const toISO = (d) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      };
+
+      let sVal = localStorage.getItem('startDate') || toISO(oneMonthAgo);
+      let eVal = localStorage.getItem('endDate') || toISO(today);
+
+      if (startInput) startInput.value = sVal;
+      if (endInput) endInput.value = eVal;
+      if (aliasStart) aliasStart.value = sVal;
+      if (aliasEnd) aliasEnd.value = eVal;
+
+      function renderPeriode() {
+        const s = new Date(startInput.value);
+        const e = new Date(endInput.value);
+        const fmt = (d) => `${d.getDate()} ${d.toLocaleDateString('id-ID', { month: 'long' })} ${d.getFullYear()}`;
+        const periodeStr = `${fmt(s)} - ${fmt(e)}`;
+
+        const label = document.getElementById('periode-text');
+        if (label) label.innerText = periodeStr;
+
+        localStorage.setItem('startDate', startInput.value);
+        localStorage.setItem('endDate', endInput.value);
+        localStorage.setItem('periode', periodeStr);
+
+        if (aliasStart) aliasStart.value = startInput.value;
+        if (aliasEnd) aliasEnd.value = endInput.value;
+
+        if (typeof updateLaporan === 'function') {
+          updateLaporan();
+        }
+      }
+
+      startInput.addEventListener('change', () => {
+        if (endInput.showPicker) endInput.showPicker();
+        else endInput.click();
+      });
+
+      endInput.addEventListener('change', renderPeriode);
+
+      renderPeriode();
+    }
+
+    function openNativeDatePicker() {
+      const startInput = document.getElementById('startDate');
+      if (!startInput) return;
+      if (startInput.showPicker) {
+        startInput.showPicker();
+      } else {
+        startInput.click();
+      }
+    }
+
+    // --- 3. FIX SCAN SEKARANG: GUNAKAN MODAL BUKAN ALERT ---
+    window.scanSekarang = function() {
+      const btn = document.querySelector('.btn-scan-sekarang');
+      if (btn) {
+        btn.innerText = 'Memproses AI OCR...';
+        btn.style.opacity = '0.6';
+      }
+
+      setTimeout(() => {
+        const storeNames = ["Warung Bu Tini", "Kopi Mantap", "Toko Jaya", "Berkah Mart"];
+        const randomStore = storeNames[Math.floor(Math.random() * storeNames.length)];
+        const randomTotal = (Math.floor(Math.random() * 80) + 15) * 1000;
+        const totalFormatted = `Rp ${randomTotal.toLocaleString('id-ID')}`;
+
+        const newTransaction = {
+          store: randomStore,
+          total: totalFormatted,
+          time: `Hari ini, ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} • Struk`
+        };
+
+        let list = JSON.parse(localStorage.getItem('transaksi') || '[]');
+        list.unshift(newTransaction);
+        localStorage.setItem('transaksi', JSON.stringify(list));
+
+        if (typeof renderTransactions === 'function') {
+          renderTransactions();
+        }
+
+        if (btn) {
+          btn.innerText = 'Scan Sekarang';
+          btn.style.opacity = '1';
+        }
+
+        // Tampilkan Modal Gold Black
+        showGoldModal(
+          'Struk Berhasil!',
+          `<strong>${newTransaction.store}</strong><br><span style="color:#D4AF37; font-size:18px; font-weight:800;">${newTransaction.total}</span><br><span style="font-size:12px; color:#A3A3A3;">Data telah tercatat otomatis ke Laba Rugi</span>`
+        );
+
+        if (typeof showPage === 'function') {
+          showPage('home');
+        }
+      }, 1200);
+    };
+
+    // --- 4. FIX QR: HANYA BERISI TOTAL + TIMESTAMP ---
+    window.createQR = function() {
+      const totalInput = document.getElementById('total-input');
+      const total = totalInput && totalInput.value.trim() !== '' ? totalInput.value.trim() : 'Rp 98.000';
+      const qrContainer = document.getElementById('qrcode');
+      if (!qrContainer) return;
+
+      const qrPayload = `QUICK-INVOICE|${total}|${Date.now()}`;
+
+      if (window.QRCode) {
+        qrContainer.innerHTML = '';
+        new QRCode(qrContainer, {
+          text: qrPayload,
+          width: 190,
+          height: 190,
+          colorDark: "#000000",
+          colorLight: "#FFFFFF",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+        qrContainer.style.filter = 'drop-shadow(0 0 15px rgba(212,175,55,0.4))';
+      }
+    };
+
+    // Inisialisasi Kalender saat DOM Ready
+    document.addEventListener('DOMContentLoaded', () => {
+      initNativeKalender();
+    });
+  </script>
 </body>
-  </html>
+      </html>
