@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Quick Invoice - Foto Struk Jadi Laba Rugi</title>
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0D0D0D">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/192/1055/1055644.png">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1055/1055644.png">
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- 1. SPLASH SCREEN (Screen Flash di awal aplikasi) -->
+    <div id="splash_screen">
+      <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" alt="Gold Ornamental Receipt Icon" class="splash-icon">
+      <h1 class="splash-title">QUICK INVOICE</h1>
+      <p class="splash-subtitle">Foto Struk Jadi Laba Rugi</p>
+      <span class="splash-desc">luxury premium UMKM app</span>
+      
+      <div class="pagination">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+
+    <!-- 2. HOME SCREEN -->
+    <section id="home_screen" class="screen">
+      <header class="top-header">
+        <div class="app-brand">Quick Invoice</div>
+        <div class="header-actions">
+          <button class="btn-icon" id="theme-toggle" title="Toggle Terang/Gelap">☀️</button>
+        </div>
+      </header>
+
+      <div class="profit-card">
+        <div class="profit-label">Laba Hari Ini</div>
+        <div class="profit-amount-row">
+          <div class="profit-amount">Rp 524.000</div>
+          <div class="badge-growth">+12.5%</div>
+        </div>
+      </div>
+
+      <div class="action-grid">
+        <button class="btn-gold-action" onclick="navigateTo('scan_struk_screen')">
+          📷 Scan Struk
+        </button>
+        <button class="btn-gold-action" onclick="navigateTo('buat_qr_screen')">
+          📱 Buat QR Nota
+        </button>
+      </div>
+
+      <div class="section-wrapper">
+        <div class="section-header">
+          <div class="section-title">Transaksi Terbaru</div>
+          <span class="link-gold">Lihat Semua &gt;</span>
+        </div>
+
+        <div class="tx-item">
+          <div>
+            <div class="tx-store">Warung Bu Tini</div>
+            <div class="tx-time">Hari ini, 10:32 • Struk</div>
+          </div>
+          <div class="tx-amount">Rp 35.000</div>
+        </div>
+
+        <div class="tx-item">
+          <div>
+            <div class="tx-store">Kopi Mantap</div>
+            <div class="tx-time">Hari ini, 09:15 • Struk</div>
+          </div>
+          <div class="tx-amount">Rp 22.000</div>
+        </div>
+
+        <div class="tx-item">
+          <div>
+            <div class="tx-store">Toko Jaya</div>
+            <div class="tx-time">Kemarin, 18:40 • Struk</div>
+          </div>
+          <div class="tx-amount">Rp 120.000</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SCAN STRUK SCREEN -->
+    <section id="scan_struk_screen" class="screen">
+      <header class="top-header">
+        <div class="header-actions">
+          <button class="btn-icon" onclick="navigateTo('home_screen')">←</button>
+        </div>
+        <div class="app-brand" style="font-size: 16px;">SCAN STRUK</div>
+        <div style="width: 38px;"></div>
+      </header>
+
+      <div class="branding-banner">
+        <div>
+          <div style="font-weight: 700; font-size: 13px; color: var(--primary-gold);">Quick Invoice</div>
+          <div style="font-size: 11px; color: var(--text-muted);">Premium UMKM • Berbasis AI</div>
+        </div>
+        <span style="font-size: 20px;">⚡</span>
+      </div>
+
+      <div class="camera-container">
+        <div class="scanner-line"></div>
+        <span style="font-size: 40px; margin-bottom: 8px;">🧾</span>
+        <div class="cam-inst">Arahkan Kamera ke Struk</div>
+        <div class="cam-sub">Pastikan struk terlihat jelas, datar, dan tidak blur</div>
+      </div>
+
+      <button class="primary-btn" onclick="simulateScan()">Scan Sekarang</button>
+      
+      <p style="text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+        🔒 Data struk aman &amp; tersimpan otomatis
+      </p>
+    </section>
+
+    <!-- 4. LAPORAN LABA RUGI SCREEN -->
+    <section id="laporan_screen" class="screen">
+      <header class="top-header">
+        <div class="header-actions">
+          <button class="btn-icon" onclick="navigateTo('home_screen')">←</button>
+        </div>
+        <div class="app-brand" style="font-size: 16px;">LAPORAN LABA RUGI</div>
+        <button class="btn-icon" title="Download Laporan">⬇️</button>
+      </header>
+
+      <div style="margin: 12px 20px 0; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 13px; color: var(--text-muted);">Periode:</span>
+        <div style="background: var(--surface-color); border: 1px solid var(--surface-border); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;">
+          📅 1 - 31 Agustus 2024
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-title">Total Pemasukan</div>
+          <div class="summary-val" style="color: var(--accent-green);">Rp 2.450.000</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-title">Pengeluaran</div>
+          <div class="summary-val" style="color: var(--accent-red);">Rp 1.926.000</div>
+        </div>
+        <div class="summary-card highlight">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div class="summary-title">Laba Bersih</div>
+              <div class="summary-val" style="color: var(--primary-gold);">Rp 524.000</div>
+            </div>
+            <div class="badge-growth">+22%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div style="font-size: 14px; font-weight: 700;">Tren Laba Mingguan</div>
+        <div class="chart-bars">
+          <div class="bar-col"><div class="bar" style="height: 40px;"></div><span class="bar-label">M1</span></div>
+          <div class="bar-col"><div class="bar" style="height: 60px;"></div><span class="bar-label">M2</span></div>
+          <div class="bar-col"><div class="bar" style="height: 50px;"></div><span class="bar-label">M3</span></div>
+          <div class="bar-col"><div class="bar" style="height: 85px;"></div><span class="bar-label">M4</span></div>
+          <div class="bar-col"><div class="bar" style="height: 100px;"></div><span class="bar-label">M5</span></div>
+        </div>
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">
+          • Laba meningkat 22% dari minggu lalu • Tren positif
+        </p>
+      </div>
+    </section>
+
+    <!-- 5. BUAT QR NOTA SCREEN -->
+    <section id="buat_qr_screen" class="screen">
+      <header class="top-header">
+        <div class="header-actions">
+          <button class="btn-icon" onclick="navigateTo('home_screen')">←</button>
+        </div>
+        <div class="app-brand" style="font-size: 16px;">BUAT QR NOTA</div>
+        <span style="font-size: 10px; font-weight: 800; background: var(--primary-gold); color: #000; padding: 4px 6px; border-radius: 4px;">GOLD</span>
+      </header>
+
+      <div class="form-group" style="margin-top: 14px;">
+        <label class="form-label">Nama Toko</label>
+        <input type="text" id="qrStoreInput" class="form-input" placeholder="Masukkan nama toko" value="Warung Berkah">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Total</label>
+        <input type="text" id="qrAmountInput" class="form-input" placeholder="Rp 0" value="Rp 50.000">
+      </div>
+
+      <button class="primary-btn" onclick="generateQRPreview()">CREATE QR</button>
+
+      <div class="qr-box">
+        <!-- Vector Mock QR -->
+        <svg viewBox="0 0 100 100" fill="#000000">
+          <rect x="0" y="0" width="30" height="30" />
+          <rect x="5" y="5" width="20" height="20" fill="#FFFFFF" />
+          <rect x="9" y="9" width="12" height="12" />
+          
+          <rect x="70" y="0" width="30" height="30" />
+          <rect x="75" y="5" width="20" height="20" fill="#FFFFFF" />
+          <rect x="79" y="9" width="12" height="12" />
+
+          <rect x="0" y="70" width="30" height="30" />
+          <rect x="5" y="75" width="20" height="20" fill="#FFFFFF" />
+          <rect x="9" y="79" width="12" height="12" />
+
+          <rect x="35" y="10" width="6" height="6" />
+          <rect x="45" y="10" width="8" height="6" />
+          <rect x="58" y="10" width="5" height="10" />
+          <rect x="35" y="35" width="10" height="10" />
+          <rect x="50" y="35" width="15" height="5" />
+          <rect x="70" y="45" width="10" height="15" />
+          <rect x="40" y="60" width="12" height="12" />
+          <rect x="58" y="65" width="8" height="8" />
+          <rect x="75" y="75" width="16" height="16" />
+        </svg>
+      </div>
+
+      <p style="text-align: center; font-weight: 700; font-size: 13px;">Scan QR untuk Nota Digital</p>
+      <p style="text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 4px; padding: 0 30px;">
+        Pindai QR ini untuk melihat &amp; membayar nota secara digital
+      </p>
+    </section>
+
+    <!-- GLOBAL BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="navigateTo('home_screen')">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" onclick="navigateTo('laporan_screen')">
+        <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
+        <span>Laporan</span>
+      </button>
+      <button class="nav-item" onclick="navigateTo('buat_qr_screen')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>QR</span>
+      </button>
+      <button class="nav-item" onclick="alert('Pengaturan Aplikasi')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Setting</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
